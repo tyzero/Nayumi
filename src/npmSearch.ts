@@ -7,7 +7,7 @@ import { join } from 'path'
 registerFont(join(__dirname, '../web/font/ttf/deng.ttf'), { family: 'deng' })
 registerFont(join(__dirname, '../web/font/ttf/FiraCode-Regular.ttf'), { family: 'FiraCode' })
 const ctx = createCanvas(700, 600)
-const chart = charts.init(ctx, 'macarons')
+const chart = charts.init(ctx as any, 'macarons')
 ;(charts as any).setCanvasCreator(() => ctx)
 const label = {
   normal: {

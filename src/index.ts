@@ -1,4 +1,4 @@
-import * as Telegraf from 'telegraf'
+import Telegraf from 'telegraf'
 import * as escape from 'markdown-escape'
 import * as session from 'telegraf/session'
 import * as HttpsProxy from 'https-proxy-agent'
@@ -20,7 +20,7 @@ const FILE = join(__dirname, '../config.json')
 readFile(FILE, (err, file) => {
   const config = { token: process.env.TOKEN || '', agent: process.env.AGENT || '' }
   if (!err && file) {
-    try { Object.assign(config, JSON.parse(file.toString())) } catch (e) {}
+    try { Object.assign(config, JSON.parse(file.toString())) } catch (e) { }
   }
   if (!config.token) {
     writeFileSync(FILE, JSON.stringify(config, null, 2))
@@ -34,16 +34,26 @@ readFile(FILE, (err, file) => {
         username: 'NayumiBot', ...(agent ? { telegram: { agent } } : {})
       }
     )
-      .use(session())
+    bot.start((ctx) => ctx.reply('Welcome'))
+    // bot.help((ctx) => ctx.reply('Send me a sticker'))
+    bot.help((ctx) => ctx.replyWithMarkdown(HELP))
+    bot.telegram.getMe().then((botInfo) => {
+      bot.options.username = botInfo.username
+    }).catch(e => console.error(e))
+
+    bot.on('sticker', (ctx) => ctx.reply('👍'))
+    bot.hears('hi', (ctx) => ctx.reply('Hey there'))
+    bot.command('talk', (ctx) => ctx.reply('???'))
+    bot.use(session())
       .use((ctx, next) => {
-        ctx.replyRaw = ctx.reply
-        ctx.reply = (...args) => ((ctx.session.hasSent = true), ctx.replyRaw(...args))
+        (ctx as any).replyRaw = ctx.reply
+        ctx.reply = (...args) => (((ctx as any).session.hasSent = true), (ctx as any).replyRaw(...args))
         return next().catch(e => {
           console.error(e)
-          return ctx.replyRaw('发生错误了惹(๑ŏ ﹏ ŏ๑)~')
+          return (ctx as any).replyRaw('发生错误了惹(๑ŏ ﹏ ŏ๑)~')
         })
       })
-      .on('message', (ctx, next) => ((ctx.session.hasSent = false), next()))
+      .on('message', (ctx, next) => (((ctx as any).session.hasSent = false), next()))
       .command('use', async ctx => {
         let query: string = ctx.message.text
         const i = query.indexOf(' ')
@@ -83,9 +93,9 @@ readFile(FILE, (err, file) => {
           const { source, total, results } = await npmSearch(query, agent)
           if (source) await ctx.replyWithPhoto({ source })
           const text = results.map(({ package: { name, version, description: d,
-              links: { npm, repository: r } } }, j) => ((d = escape(d)),
-            `${j}. [${name}](${npm})@[${escape(version)}](https://www.npmjs.com/package/${name}?activeTab=` +
-            `versions): ${d.length > 40 ? d.slice(40) + '...' : d} ${r ? `[仓库](${r})` : ''}`))
+            links: { npm, repository: r } } }, j) => ((d = escape(d)),
+              `${j}. [${name}](${npm})@[${escape(version)}](https://www.npmjs.com/package/${name}?activeTab=` +
+              `versions): ${d.length > 40 ? d.slice(40) + '...' : d} ${r ? `[仓库](${r})` : ''}`))
             .join('\n')
           await ctx.replyWithMarkdown(
             `@${ctx.message.from.username}\n根据 [${escape(queryString)}](https://www.q` +
@@ -93,9 +103,8 @@ readFile(FILE, (err, file) => {
           )
         }
       })
-      .command(['start', 'help'], ctx => ((ctx.session.type = 0), ctx.replyWithMarkdown(HELP)))
-      .startPolling()
-      .catch(console.error)
+      .command(['start', 'help'], ctx => (((ctx as any).session.type = 0), ctx.replyWithMarkdown(HELP)))
+    bot.startPolling().catch(console.error)
     reply(bot, browser)
     console.log('Started!')
   }).catch(console.error)

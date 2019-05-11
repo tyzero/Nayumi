@@ -1,6 +1,6 @@
 /src/index.js
 /config.json
-
+/dist
 # Logs
 logs
 *.log

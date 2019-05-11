@@ -93,11 +93,14 @@ export default (bot: any, browser: Browser) => {
   }))
   bot.on('message', (ctx, next) => next().then(() => {
     const type = types[ctx.session[TYPE]]
+    console.log('receive msg: ', ctx.message.text)
     if (type && !ctx.session.hasSent && ctx.message) {
       ctx.session[TYPE] = null
       ctx.session.hasSent = true
       const code = ctx.message.text
       type(ctx, code.endsWith('\n') ? code : code + '\n')
+    } else {
+      ctx.reply('嘤嘤嘤')
     }
   }))
 }

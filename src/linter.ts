@@ -8,7 +8,8 @@ const getErrors = (errors: Linter.LintMessage[]) => JSON.stringify(errors.map(er
   from: { line: err.line - 1, ch: err.column - 1 },
   to: { line: err.endLine - 1, ch: err.endColumn - 1 }
 })))
-export default (browser: Browser) => createPool<(code: string, errors: Linter.LintMessage[]) => Promise<Buffer>>({
+// tslint:disable-next-line:max-line-length
+export default (browser: Browser) => createPool<(code: string, errors: Linter.LintMessage[]) => Promise<string | Buffer>>({
   async create () {
     const page = await browser.newPage()
     await page.goto(PATH)

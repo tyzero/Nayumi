@@ -3,7 +3,7 @@ import { Browser } from 'puppeteer'
 import { createPool } from 'generic-pool'
 
 const PATH = 'file:///' + join(__dirname, '../web/codeImage.html')
-export default (browser: Browser) => createPool<(code: string) => Promise<Buffer>>({
+export default (browser: Browser) => createPool<(code: string) => Promise<string | Buffer>>({
   async create () {
     const page = await browser.newPage()
     await page.goto(PATH)
