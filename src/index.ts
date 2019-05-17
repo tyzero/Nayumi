@@ -12,8 +12,7 @@ import npmSearch from './npmSearch'
 const HELP = `喵✧٩(ˊωˋ)و✧~
 快来试试使用 /code 和 /lint 生成代码截图吧, 也可以输入 /fix 来修复语法错误, 还可以使用 /run 来执行脚本哦!✨✨
 
-作者: [Shirasawa](https://github.com/ShirasawaSama)
-项目地址: [Github](https://github.com/ShirasawaSama/Nayumi)`
+原作者: [Shirasawa](https://github.com/ShirasawaSama)`
 
 const FILE = join(__dirname, '../config.json')
 
@@ -41,9 +40,10 @@ readFile(FILE, (err, file) => {
       bot.options.username = botInfo.username
     }).catch(e => console.error(e))
 
-    bot.on('sticker', (ctx) => ctx.reply('👍'))
+    // bot.on('sticker', (ctx) => ctx.reply('👍'))
     bot.hears('hi', (ctx) => ctx.reply('Hey there'))
     bot.command('talk', (ctx) => ctx.reply('???'))
+    bot.command('clear', (ctx) => ctx.reply('?'))
     bot.use(session())
       .use((ctx, next) => {
         (ctx as any).replyRaw = ctx.reply

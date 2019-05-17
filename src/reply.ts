@@ -100,7 +100,7 @@ export default (bot: any, browser: Browser) => {
       const code = ctx.message.text
       type(ctx, code.endsWith('\n') ? code : code + '\n')
     } else {
-      ctx.reply('嘤嘤嘤')
+      // ctx.reply('嘤嘤嘤')
     }
   }))
 }

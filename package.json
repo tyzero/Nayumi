@@ -41,7 +41,8 @@
     "stop": "pm2 stop nayumi",
     "logs": "pm2 logs nayumi",
     "restart": "tsc && pm2 restart nayumi",
-    "dev" : "tsc && node dist/index.js"
+    "dev" : "tsc && node dist/index.js",
+    "ts" : "ts-node src/index.ts"
   },
   "repository": {
     "type": "git",
