@@ -26,7 +26,8 @@ readFile(FILE, (err, file) => {
     console.error('Token must be set. Please edit config.json')
     process.exit(1)
   }
-  launch().then(async browser => {
+  const centorOS = { args: ['--no-sandbox', '--disable-setuid-sandbox'] }
+  launch(centorOS).then(async browser => {
     const agent = config.agent && new HttpsProxy(config.agent)
     const bot = new Telegraf(config.token,
       {
