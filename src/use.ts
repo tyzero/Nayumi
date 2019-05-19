@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export default (name: string) => axios
-  .get('https://registry.npm.taobao.org/' + name)
+  .get('https://registry.npmjs.org/' + name)
   .then(({ data: { error, readme, homepage, repository } }) => {
     if (error) return false
     const r: string = readme || ''
