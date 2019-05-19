@@ -2,6 +2,14 @@ import axios from 'axios'
 
 export default (name: string) => axios
   .get('https://registry.npmjs.org/' + name)
+  .catch(e => {
+    console.error(e)
+    if (e.response.status === 404) {
+      return Promise.resolve({ data: { error: e } })
+    } else {
+      return Promise.reject(e)
+    }
+  })
   .then(({ data: { error, readme, homepage, repository } }) => {
     if (error) return false
     const r: string = readme || ''
@@ -37,3 +45,8 @@ export default (name: string) => axios
         .match(/https?:\/\/.+?$/)
     } as { usage: string[], homepage: string | undefined, repository: string }
   })
+  // .catch(e => {
+  //   console.error(e)
+  //   Promise.reject(false)
+
+  // })

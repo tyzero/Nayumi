@@ -10,6 +10,10 @@ import reply from './reply'
 import npmSearch from './npmSearch'
 
 const HELP = `喵✧٩(ˊωˋ)و✧~
+/use 包名 可以查看npm仓库中typescript 和 JavaScript 的 代码片段😯 （最多返回3段）
+🤪当然前提是readme里有代码片段
+
+
 快来试试使用 /code 和 /lint 生成代码截图吧, 也可以输入 /fix 来修复语法错误, 还可以使用 /run 来执行脚本哦!✨✨
 
 原作者: [Shirasawa](https://github.com/ShirasawaSama)`
