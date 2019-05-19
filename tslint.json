@@ -15,6 +15,7 @@
     "align": false,
     "no-bitwise": false,
     "only-arrow-functions": false,
-    "no-conditional-assignment": false
+    "no-conditional-assignment": false,
+    "await-promise": false
   }
 }

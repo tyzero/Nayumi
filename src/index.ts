@@ -13,6 +13,8 @@ const HELP = `喵✧٩(ˊωˋ)و✧~
 /use 包名 可以查看npm仓库中typescript 和 JavaScript 的 代码片段😯 （最多返回3段）
 🤪当然前提是readme里有代码片段
 
+/npm 包名 查看库得分(⊙o⊙)哦
+
 
 快来试试使用 /code 和 /lint 生成代码截图吧, 也可以输入 /fix 来修复语法错误, 还可以使用 /run 来执行脚本哦!✨✨
 
@@ -25,7 +27,6 @@ readFile(FILE, (err, file) => {
   if (!err && file) {
     try { Object.assign(config, JSON.parse(file.toString())) } catch (e) { }
   }
-  console.log(config)
   if (!config.token) {
     writeFileSync(FILE, JSON.stringify(config, null, 2))
     console.error('Token must be set. Please edit config.json')
@@ -39,14 +40,11 @@ readFile(FILE, (err, file) => {
         username: 'NayumiBot', ...(agent ? { telegram: { agent } } : {})
       }
     )
-    bot.start((ctx) => ctx.reply('Welcome'))
-    // bot.help((ctx) => ctx.reply('Send me a sticker'))
-    bot.help((ctx) => ctx.replyWithMarkdown(HELP))
+    // bot.help((ctx) => ctx.replyWithMarkdown(HELP))
     bot.telegram.getMe().then((botInfo) => {
       bot.options.username = botInfo.username
     }).catch(e => console.error(e))
 
-    // bot.on('sticker', (ctx) => ctx.reply('👍'))
     bot.hears('hi', (ctx) => ctx.reply('Hey there'))
     bot.command('talk', (ctx) => ctx.reply('???'))
     bot.command('clear', (ctx) => ctx.reply('?'))

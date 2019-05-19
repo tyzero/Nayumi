@@ -7,7 +7,7 @@ import getLinter from './linter'
 import getCodeImage from './codeImage'
 
 const LEVEL = ['💬  ', '❕  ', '❗  ', '❌  ']
-const PRINT = '__print__'
+const PRINT = 'print2'
 const CODE = `const console = (f => {
   let times = 0
   const fn = (t, args) => {
@@ -66,7 +66,8 @@ export default (bot: any, browser: Browser) => {
     async run (ctx, code) {
       const result: string[] = []
       try {
-        await vm.run(CODE + ctx.message.text, {
+        await vm.run(CODE + code, {
+          ctx,
           [PRINT] (t, args) {
             result.push(LEVEL[t] + args.map(a => a === '#%Symbol%#' ? '%Symbol%' : inspect(a)).join(' '))
           }
