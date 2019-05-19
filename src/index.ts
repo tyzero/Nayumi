@@ -25,6 +25,7 @@ readFile(FILE, (err, file) => {
   if (!err && file) {
     try { Object.assign(config, JSON.parse(file.toString())) } catch (e) { }
   }
+  console.log(config)
   if (!config.token) {
     writeFileSync(FILE, JSON.stringify(config, null, 2))
     console.error('Token must be set. Please edit config.json')
@@ -98,12 +99,12 @@ readFile(FILE, (err, file) => {
           const { source, total, results } = await npmSearch(query, agent)
           if (source) await ctx.replyWithPhoto({ source })
           const text = results.map(({ package: { name, version, description: d,
-            links: { npm, repository: r } } }, j) => ((d = escape(d)),
+            links: { npm, repository: r } } }, j) => ((d = escape(d || '')),
               `${j}. [${name}](${npm})@[${escape(version)}](https://www.npmjs.com/package/${name}?activeTab=` +
               `versions): ${d.length > 40 ? d.slice(40) + '...' : d} ${r ? `[仓库](${r})` : ''}`))
             .join('\n')
           await ctx.replyWithMarkdown(
-            `@${ctx.message.from.username}\n根据 [${escape(queryString)}](https://www.q` +
+            `@${ctx.message.from.username}\n根据 [${escape(queryString)}](https://www.` +
             `npmjs.com/search?q=${escape(query)}) 总共找到 _${total}_ 个模块(=゜ω゜)ノ\n\n${text}`
           )
         }

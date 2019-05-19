@@ -3,7 +3,6 @@ import axios from 'axios'
 export default (name: string) => axios
   .get('https://registry.npmjs.org/' + name)
   .catch(e => {
-    console.error(e)
     if (e.response.status === 404) {
       return Promise.resolve({ data: { error: e } })
     } else {
