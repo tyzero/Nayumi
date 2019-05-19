@@ -72,14 +72,14 @@ readFile(FILE, (err, file) => {
               const text = usage.map((c, j) =>
                 '*代码片段' + (j + 1) + ':*\n```\n' + c + '\n```').join('\n\n')
               await ctx.replyWithMarkdown(
-                `@${ctx.message.from.username}\n模块 [${query}](https://www.q` +
+                `@${ctx.message.from.username}\n模块 [${query}](https://www.` +
                 `npmjs.com/package/${query}) 总共找到以下使用方法(=゜ω゜)ノ\n\n${text}\n` +
                 (homepage ? ` [模块主页](${homepage})` : '') +
                 (repository ? ` [仓库](${repository})` : '')
               )
             } else {
               await ctx.replyWithMarkdown(
-                `@${ctx.message.from.username}\n模块 [${query}](https://www.q` +
+                `@${ctx.message.from.username}\n模块 [${query}](https://www.` +
                 `npmjs.com/package/${query}) 没有找到使用方法(๑ŏ ﹏ ŏ๑)~\n\n` +
                 (homepage ? ` [模块主页](${homepage})` : '') +
                 (repository ? ` [仓库](${repository})` : '')
