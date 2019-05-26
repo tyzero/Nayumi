@@ -48,11 +48,15 @@ export default (bot: any, browser: Browser) => {
     },
     async lint (ctx, code) {
       const errors = eslint.executeOnText(code).results[0].messages
-      await ctx.replyWithPhoto({ source: await (await linter.acquire())(code, errors) })
+      await ctx.replyWithPhoto({
+        source: await (await linter.acquire())(code, errors)
+      })
       const len = errors.length
       if (len) {
         const times = Math.min(len, 10)
-        let text = `@${ctx.message.from.username}\n❌  *总计 ${len} 个语法错误*(๑ŏ ﹏ ŏ๑).\n\n`
+        let text = `@${
+          ctx.message.from.username
+        }\n❌  *总计 ${len} 个语法错误*(๑ŏ ﹏ ŏ๑).\n\n`
         for (let i = 0; i < len; i++) {
           const { message, ruleId, line, column } = errors[i]
           text += `${i}. *${ruleId}*: ${message} _(位于第 ${line} 行, 第 ${column} 列)_\n`
@@ -60,7 +64,11 @@ export default (bot: any, browser: Browser) => {
         if (len !== times) text += `\n*还有 ${len - 15} 个语法错误未被列出...*`
         await ctx.replyWithMarkdown(text)
       } else {
-        await ctx.reply(`@${ctx.message.from.username}\n✅  代码已检查完毕, 无语法错误哦(=゜ω゜)ノ`)
+        await ctx.reply(
+          `@${
+            ctx.message.from.username
+          }\n✅  代码已检查完毕, 无语法错误哦(=゜ω゜)ノ`
+        )
       }
     },
     async run (ctx, code) {
@@ -69,39 +77,58 @@ export default (bot: any, browser: Browser) => {
         await vm.run(CODE + code, {
           ctx,
           [PRINT] (t, args) {
-            result.push(LEVEL[t] + args.map(a => a === '#%Symbol%#' ? '%Symbol%' : inspect(a)).join(' '))
+            result.push(
+              LEVEL[t] +
+                args
+                  .map(a => (a === '#%Symbol%#' ? '%Symbol%' : inspect(a)))
+                  .join(' ')
+            )
           }
         })
       } catch (e) {
-        result.push(LEVEL[3] + ((e ? e.name + ': ' + e.message : e) || 'Error: null'))
+        result.push(
+          LEVEL[3] + ((e ? e.name + ': ' + e.message : e) || 'Error: null')
+        )
       }
       if (result.length > 14) result.push('...')
       const log = escape(result.join('\n').replace(REP, 'nayumi'))
-      await ctx.reply(`@${ctx.message.from.username}\n代码执行完毕啦(=゜ω゜)ノ:\n\n` +
-        (log.length > 800 ? log.slice(0, 800) + '...' : log))
+      await ctx.reply(
+        `@${ctx.message.from.username}\n代码执行完毕啦(=゜ω゜)ノ:\n\n` +
+          (log.length > 800 ? log.slice(0, 800) + '...' : log)
+      )
     },
     async fix (ctx, code) {
       const fixed = eslintFixer.executeOnText(code).results[0].output
-      await ctx.replyWithPhoto({ source: await (await codeImage.acquire())(fixed) })
-      await ctx.replyWithMarkdown(`@${ctx.message.from.username}\n代码修复完毕啦(=゜ω゜)ノ:\n\n` +
-        '```javascript\n' + fixed + '\n```')
+      await ctx.replyWithPhoto({
+        source: await (await codeImage.acquire())(fixed)
+      })
+      await ctx.replyWithMarkdown(
+        `@${ctx.message.from.username}\n代码修复完毕啦(=゜ω゜)ノ:\n\n` +
+          '```javascript\n' +
+          fixed +
+          '\n```'
+      )
     }
   }
 
-  Object.keys(types).forEach(command => bot.command(command, ctx => {
-    ctx.session[TYPE] = command
-    return ctx.reply('喵~ 接下来需要您发送您的代码片段咯(๑´∀`๑)!')
-  }))
-  bot.on('message', (ctx, next) => next().then(() => {
-    const type = types[ctx.session[TYPE]]
-    console.log('receive msg: ', ctx.message.text)
-    if (type && !ctx.session.hasSent && ctx.message) {
-      ctx.session[TYPE] = null
-      ctx.session.hasSent = true
-      const code = ctx.message.text
-      type(ctx, code.endsWith('\n') ? code : code + '\n')
-    } else {
-      // ctx.reply('嘤嘤嘤')
-    }
-  }))
+  Object.keys(types).forEach(command =>
+    bot.command(command, ctx => {
+      ctx.session[TYPE] = command
+      return ctx.reply('喵~ 接下来需要您发送您的代码片段咯(๑´∀`๑)!')
+    })
+  )
+  bot.on('message', (ctx, next) =>
+    next().then(() => {
+      const type = types[ctx.session[TYPE]]
+      console.log('receive msg: ', ctx.message.text)
+      if (type && !ctx.session.hasSent && ctx.message) {
+        ctx.session[TYPE] = null
+        ctx.session.hasSent = true
+        const code = ctx.message.text
+        type(ctx, code.endsWith('\n') ? code : code + '\n')
+      } else {
+        // ctx.reply('嘤嘤嘤')
+      }
+    })
+  )
 }

@@ -16,6 +16,8 @@
     "no-bitwise": false,
     "only-arrow-functions": false,
     "no-conditional-assignment": false,
+    "no-string-literal": false,
+    "no-trailing-whitespace": false,
     "await-promise": false
   }
 }
