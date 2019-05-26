@@ -32,7 +32,7 @@ function loadApi (action: string) {
 
 export async function actionStart (ctx) {
   if (ctx.message.from.id !== 723764692) {
-    await ctx.reply('*permission denied*')
+    await ctx.replyWithMarkdown('*permission denied*')
     return
   }
   const query = ctx.message.text
