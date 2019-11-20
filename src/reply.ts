@@ -5,6 +5,7 @@ import { CLIEngine } from 'eslint'
 import * as escape from 'markdown-escape'
 import getLinter from './linter'
 import getCodeImage from './codeImage'
+import { sendSoup } from './SoupSoul'
 
 const LEVEL = ['💬  ', '❕  ', '❗  ', '❌  ']
 const PRINT = 'print2'
@@ -43,10 +44,10 @@ export default (bot: any, browser: Browser) => {
   const linter = getLinter(browser)
   const codeImage = getCodeImage(browser)
   const types: { [command: string]: (ctx: any, code: string) => void } = {
-    async code (ctx, code) {
+    async code(ctx, code) {
       ctx.replyWithPhoto({ source: await (await codeImage.acquire())(code) })
     },
-    async lint (ctx, code) {
+    async lint(ctx, code) {
       const errors = eslint.executeOnText(code).results[0].messages
       await ctx.replyWithPhoto({
         source: await (await linter.acquire())(code, errors)
@@ -56,7 +57,7 @@ export default (bot: any, browser: Browser) => {
         const times = Math.min(len, 10)
         let text = `@${
           ctx.message.from.username
-        }\n❌  *总计 ${len} 个语法错误*(๑ŏ ﹏ ŏ๑).\n\n`
+          }\n❌  *总计 ${len} 个语法错误*(๑ŏ ﹏ ŏ๑).\n\n`
         for (let i = 0; i < len; i++) {
           const { message, ruleId, line, column } = errors[i]
           text += `${i}. *${ruleId}*: ${message} _(位于第 ${line} 行, 第 ${column} 列)_\n`
@@ -66,22 +67,26 @@ export default (bot: any, browser: Browser) => {
       } else {
         await ctx.reply(
           `@${
-            ctx.message.from.username
+          ctx.message.from.username
           }\n✅  代码已检查完毕, 无语法错误哦(=゜ω゜)ノ`
         )
       }
     },
-    async run (ctx, code) {
+    async run(ctx, code) {
       const result: string[] = []
       try {
-        await vm.run(CODE + code, {
+        await vm.run(code, {
           ctx,
-          [PRINT] (t, args) {
+          tg: ctx.telegram,
+          async ss() {
+            await sendSoup(ctx)
+          },
+          [PRINT](t, args) {
             result.push(
               LEVEL[t] +
-                args
-                  .map(a => (a === '#%Symbol%#' ? '%Symbol%' : inspect(a)))
-                  .join(' ')
+              args
+                .map(a => (a === '#%Symbol%#' ? '%Symbol%' : inspect(a)))
+                .join(' ')
             )
           }
         })
@@ -94,19 +99,19 @@ export default (bot: any, browser: Browser) => {
       const log = escape(result.join('\n').replace(REP, 'nayumi'))
       await ctx.reply(
         `@${ctx.message.from.username}\n代码执行完毕啦(=゜ω゜)ノ:\n\n` +
-          (log.length > 800 ? log.slice(0, 800) + '...' : log)
+        (log.length > 800 ? log.slice(0, 800) + '...' : log)
       )
     },
-    async fix (ctx, code) {
+    async fix(ctx, code) {
       const fixed = eslintFixer.executeOnText(code).results[0].output
       await ctx.replyWithPhoto({
         source: await (await codeImage.acquire())(fixed)
       })
       await ctx.replyWithMarkdown(
         `@${ctx.message.from.username}\n代码修复完毕啦(=゜ω゜)ノ:\n\n` +
-          '```javascript\n' +
-          fixed +
-          '\n```'
+        '```javascript\n' +
+        fixed +
+        '\n```'
       )
     }
   }

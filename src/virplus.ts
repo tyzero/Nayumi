@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-function loadApi (action: string) {
+function loadApi(action: string) {
   const config = (global as any).myConfig
   return axios
     .get(config.virpus_base_url + config.query, {
@@ -30,8 +30,9 @@ function loadApi (action: string) {
     })
 }
 
-export async function actionStart (ctx) {
-  if (ctx.message.from.id !== 723764692) {
+export async function actionStart(ctx) {
+  const config = (global as any).myConfig
+  if (ctx.message.from.id !== config.adminId) {
     await ctx.replyWithMarkdown('*permission denied*')
     return
   }
@@ -49,7 +50,7 @@ export async function actionStart (ctx) {
     await parerResult('status', ctx)
   }
 }
-async function parerResult (queryStr: any, ctx: any) {
+async function parerResult(queryStr: any, ctx: any) {
   const data = await loadApi(queryStr)
   const markdown = `查询结果:
 *statusmsg: ${data['statusmsg']}*
@@ -69,7 +70,7 @@ const strMap = {
   2: '剩余量'
 }
 const g = 1024 * 1024 * 1024
-function paserByte (str: string) {
+function paserByte(str: string) {
   return str
     .split(',')
     .slice(0, 3)

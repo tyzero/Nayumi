@@ -15,7 +15,11 @@
 ### 安装
 
 ```bash
+(mac opt)
+brew install pkg-config cairo pango libpng jpeg giflib librsvg
+
 npm install
+
 ```
 
 ### 启动

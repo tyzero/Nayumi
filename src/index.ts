@@ -1,7 +1,7 @@
 import Telegraf from 'telegraf'
 import * as escape from 'markdown-escape'
 import * as session from 'telegraf/session'
-import * as HttpsProxy from 'https-proxy-agent'
+import HttpsProxy from 'https-proxy-agent'
 import { readFile, writeFileSync } from 'fs'
 import { launch } from 'puppeteer'
 import { join } from 'path'
@@ -9,6 +9,7 @@ import use from './use'
 import reply from './reply'
 import npmSearch from './npmSearch'
 import * as Virplus from './virplus'
+import * as Soup from './SoupSoul'
 
 const HELP = `喵✧٩(ˊωˋ)و✧~
 /use 包名 ts 和 js 的 代码片段（最多返回3段）
@@ -30,14 +31,14 @@ readFile(FILE, (err, file) => {
   if (!err && file) {
     try {
       Object.assign(config, JSON.parse(file.toString()))
-    } catch (e) {}
+    } catch (e) { }
   }
   if (!config.token) {
     writeFileSync(FILE, JSON.stringify(config, null, 2))
     console.error('Token must be set. Please edit config.json')
     process.exit(1)
   }
-  ;(global as any).myConfig = config
+  (global as any).myConfig = config
   const centorOS = { args: ['--no-sandbox', '--disable-setuid-sandbox'] }
   launch(centorOS)
     .then(async browser => {
@@ -60,7 +61,7 @@ readFile(FILE, (err, file) => {
       bot
         .use(session())
         .use((ctx, next) => {
-          ;(ctx as any).replyRaw = ctx.reply
+          (ctx as any).replyRaw = ctx.reply
           ctx.reply = (...args) => (
             ((ctx as any).session.hasSent = true),
             (ctx as any).replyRaw(...args)
@@ -90,20 +91,20 @@ readFile(FILE, (err, file) => {
                   .join('\n\n')
                 await ctx.replyWithMarkdown(
                   `@${
-                    ctx.message.from.username
+                  ctx.message.from.username
                   }\n模块 [${query}](https://www.` +
-                    `npmjs.com/package/${query}) 总共找到以下使用方法(=゜ω゜)ノ\n\n${text}\n` +
-                    (homepage ? ` [模块主页](${homepage})` : '') +
-                    (repository ? ` [仓库](${repository})` : '')
+                  `npmjs.com/package/${query}) 总共找到以下使用方法(=゜ω゜)ノ\n\n${text}\n` +
+                  (homepage ? ` [模块主页](${homepage})` : '') +
+                  (repository ? ` [仓库](${repository})` : '')
                 )
               } else {
                 await ctx.replyWithMarkdown(
                   `@${
-                    ctx.message.from.username
+                  ctx.message.from.username
                   }\n模块 [${query}](https://www.` +
-                    `npmjs.com/package/${query}) 没有找到使用方法(๑ŏ ﹏ ŏ๑)~\n\n` +
-                    (homepage ? ` [模块主页](${homepage})` : '') +
-                    (repository ? ` [仓库](${repository})` : '')
+                  `npmjs.com/package/${query}) 没有找到使用方法(๑ŏ ﹏ ŏ๑)~\n\n` +
+                  (homepage ? ` [模块主页](${homepage})` : '') +
+                  (repository ? ` [仓库](${repository})` : '')
                 )
               }
             } else {
@@ -134,28 +135,34 @@ readFile(FILE, (err, file) => {
                   },
                   j
                 ) => (
-                  (d = escape(d || '')),
-                  `${j}. [${name}](${npm})@[${escape(
-                    version
-                  )}](https://www.npmjs.com/package/${name}?activeTab=` +
+                    (d = escape(d || '')),
+                    `${j}. [${name}](${npm})@[${escape(
+                      version
+                    )}](https://www.npmjs.com/package/${name}?activeTab=` +
                     `versions): ${d.length > 40 ? d.slice(40) + '...' : d} ${
-                      r ? `[仓库](${r})` : ''
+                    r ? `[仓库](${r})` : ''
                     }`
-                )
+                  )
               )
               .join('\n')
             await ctx.replyWithMarkdown(
               `@${ctx.message.from.username}\n根据 [${escape(
                 queryString
               )}](https://www.` +
-                `npmjs.com/search?q=${escape(
-                  query
-                )}) 总共找到 _${total}_ 个模块(=゜ω゜)ノ\n\n${text}`
+              `npmjs.com/search?q=${escape(
+                query
+              )}) 总共找到 _${total}_ 个模块(=゜ω゜)ノ\n\n${text}`
             )
           }
         })
+        .command('id', async ctx => {
+          await ctx.reply(JSON.stringify(ctx.chat, null, 2))
+        })
         .command('server', async ctx => {
           await Virplus.actionStart(ctx)
+        })
+        .command('soup', async ctx => {
+          await Soup.sendSoup(ctx)
         })
         .command(
           ['start', 'help'],
